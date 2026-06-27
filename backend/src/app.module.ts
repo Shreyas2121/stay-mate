@@ -37,6 +37,7 @@ import { PayoutsModule } from './modules/payouts/payouts.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { WishlistsModule } from './modules/wishlists/wishlists.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ReviewsModule,
     MessagesModule,
     NotificationsModule,
+    WishlistsModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeedService],

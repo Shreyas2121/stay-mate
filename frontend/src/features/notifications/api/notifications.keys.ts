@@ -1,8 +1,10 @@
 import type { NotificationStatusFilter } from '../types/notifications.types'
 
+const notificationKeyBase = ['notifications'] as const
+
 export const notificationKeys = {
-  all: ['notifications'] as const,
+  all: notificationKeyBase,
   list: (status: NotificationStatusFilter = 'all') =>
-    [...notificationKeys.all, 'list', status] as const,
-  unreadCount: [...notificationKeys.all, 'unread-count'] as const,
+    [...notificationKeyBase, 'list', status] as const,
+  unreadCount: [...notificationKeyBase, 'unread-count'] as const,
 }

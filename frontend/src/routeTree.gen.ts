@@ -24,6 +24,7 @@ import { Route as HostReservationsRouteImport } from './routes/host.reservations
 import { Route as HostMessagesRouteImport } from './routes/host.messages'
 import { Route as HostEarningsRouteImport } from './routes/host.earnings'
 import { Route as GuestTripsRouteImport } from './routes/guest.trips'
+import { Route as GuestSavedRouteImport } from './routes/guest.saved'
 import { Route as GuestMessagesRouteImport } from './routes/guest.messages'
 import { Route as CheckoutListingIdRouteImport } from './routes/checkout.$listingId'
 import { Route as AdminPayoutsRouteImport } from './routes/admin.payouts'
@@ -113,6 +114,11 @@ const GuestTripsRoute = GuestTripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => GuestRoute,
 } as any)
+const GuestSavedRoute = GuestSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => GuestRoute,
+} as any)
 const GuestMessagesRoute = GuestMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/admin/payouts': typeof AdminPayoutsRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/guest/messages': typeof GuestMessagesRoute
+  '/guest/saved': typeof GuestSavedRoute
   '/guest/trips': typeof GuestTripsRoute
   '/host/earnings': typeof HostEarningsRoute
   '/host/messages': typeof HostMessagesRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/admin/payouts': typeof AdminPayoutsRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/guest/messages': typeof GuestMessagesRoute
+  '/guest/saved': typeof GuestSavedRoute
   '/guest/trips': typeof GuestTripsRoute
   '/host/earnings': typeof HostEarningsRoute
   '/host/messages': typeof HostMessagesRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/admin/payouts': typeof AdminPayoutsRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/guest/messages': typeof GuestMessagesRoute
+  '/guest/saved': typeof GuestSavedRoute
   '/guest/trips': typeof GuestTripsRoute
   '/host/earnings': typeof HostEarningsRoute
   '/host/messages': typeof HostMessagesRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/admin/payouts'
     | '/checkout/$listingId'
     | '/guest/messages'
+    | '/guest/saved'
     | '/guest/trips'
     | '/host/earnings'
     | '/host/messages'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/payouts'
     | '/checkout/$listingId'
     | '/guest/messages'
+    | '/guest/saved'
     | '/guest/trips'
     | '/host/earnings'
     | '/host/messages'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/payouts'
     | '/checkout/$listingId'
     | '/guest/messages'
+    | '/guest/saved'
     | '/guest/trips'
     | '/host/earnings'
     | '/host/messages'
@@ -487,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuestTripsRouteImport
       parentRoute: typeof GuestRoute
     }
+    '/guest/saved': {
+      id: '/guest/saved'
+      path: '/saved'
+      fullPath: '/guest/saved'
+      preLoaderRoute: typeof GuestSavedRouteImport
+      parentRoute: typeof GuestRoute
+    }
     '/guest/messages': {
       id: '/guest/messages'
       path: '/messages'
@@ -605,11 +624,13 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface GuestRouteChildren {
   GuestMessagesRoute: typeof GuestMessagesRoute
+  GuestSavedRoute: typeof GuestSavedRoute
   GuestTripsRoute: typeof GuestTripsRoute
 }
 
 const GuestRouteChildren: GuestRouteChildren = {
   GuestMessagesRoute: GuestMessagesRoute,
+  GuestSavedRoute: GuestSavedRoute,
   GuestTripsRoute: GuestTripsRoute,
 }
 

@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { CalendarDays, MessageSquareText } from 'lucide-react'
+import { CalendarDays, Heart, MessageSquareText } from 'lucide-react'
 import { AccessDenied } from '@/components/access-denied'
 import { DashboardLayout } from '@/components/layouts/dashboard-layout'
 import { useCurrentUser } from '@/features/auth'
@@ -13,6 +13,11 @@ const GUEST_SIDEBAR_ITEMS = [
     label: 'My Trips',
     to: '/guest/trips',
     icon: <CalendarDays className="size-5" />,
+  },
+  {
+    label: 'Saved',
+    to: '/guest/saved',
+    icon: <Heart className="size-5" />,
   },
   {
     label: 'Messages',
@@ -53,4 +58,3 @@ function GuestLayout() {
     </DashboardLayout>
   )
 }
-

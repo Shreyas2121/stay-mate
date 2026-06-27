@@ -5,7 +5,6 @@ import {
   BedDouble,
   CalendarDays,
   Clock,
-  Heart,
   Home,
   Info,
   MapPin,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ListingRatingSummary, ListingReviewsSection } from '@/features/reviews'
+import { WishlistButton } from '@/features/wishlists'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import type { Listing } from '../../types/listings.types'
@@ -87,10 +87,7 @@ export function ListingContent({
               <Share2 className="size-4" />
               Share
             </Button>
-            <Button variant="outline" className="gap-2 rounded-full">
-              <Heart className="size-4" />
-              Save
-            </Button>
+            <WishlistButton listingId={listing.id} />
           </div>
         </div>
 

@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import { Heart, ImageOff } from 'lucide-react'
+import { ImageOff } from 'lucide-react'
 import type { Listing } from '@/features/host-dashboard/types/listing.types'
 import { getAssetUrl } from '@/lib/api/urls'
 import { ListingRatingSummary } from '@/features/reviews'
+import { WishlistButton } from '@/features/wishlists'
 
 interface ListingCardProps {
   listing: Listing
@@ -35,17 +36,7 @@ export function ListingCard({ listing }: ListingCardProps) {
             <span className="text-sm font-medium">No photo available</span>
           </div>
         )}
-
-        {/* Favorite Button Overlay */}
-        <button 
-          className="absolute right-3 top-3 p-2 text-white hover:scale-110 active:scale-95 transition-transform"
-          onClick={(e) => {
-            e.preventDefault() // Prevent navigation when clicking the heart
-            // In the future, toggle wishlist here
-          }}
-        >
-          <Heart className="size-6 drop-shadow-md stroke-[1.5px]" />
-        </button>
+        <WishlistButton listingId={listing.id} variant="overlay" />
       </div>
 
       {/* Details Container */}
@@ -63,7 +54,7 @@ export function ListingCard({ listing }: ListingCardProps) {
           {locationDisplay}
         </p>
         <p className="text-sm text-slate-500 mt-0.5">
-          {listing.bedrooms} bed{listing.bedrooms !== 1 ? 's' : ''} · {listing.maxGuests} guest{listing.maxGuests !== 1 ? 's' : ''}
+          {listing.bedrooms} bed{listing.bedrooms !== 1 ? 's' : ''} Â· {listing.maxGuests} guest{listing.maxGuests !== 1 ? 's' : ''}
         </p>
 
         <div className="mt-2 flex items-baseline gap-1">
