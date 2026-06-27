@@ -1,257 +1,140 @@
-import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
-import { MapPin, Users, Search, Loader2 } from 'lucide-react'
-import { format, startOfToday } from 'date-fns'
-import type { DateRange } from 'react-day-picker'
+import { ArrowRight } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useLocationAutocomplete } from '@/features/location/hooks/use-location-autocomplete'
-import type { LocationSearchResult } from '@/features/location/types/location.types'
-import { cn } from '@/lib/utils'
+import { HomeFeaturedListings } from './home-featured-listings'
+import { HomeSearch } from './home-search'
+import { HomeSectionHeader } from './home-section-header'
+import { PlatformCredibility } from './platform-credibility'
 
-interface DateSearchFieldProps {
-  label: string
-  placeholder: string
-  value?: Date
-  dateRange?: DateRange
-  onDateRangeChange: (dateRange: DateRange | undefined) => void
-}
+const workflowSteps = [
+  {
+    title: 'Search with intent',
+    description:
+      'Guests can choose a destination, dates, and party size before moving into filtered listing discovery.',
+  },
+  {
+    title: 'Save and compare',
+    description:
+      'Wishlist support makes the marketplace feel personal and keeps high-intent stays easy to revisit.',
+  },
+  {
+    title: 'Book, pay, and message',
+    description:
+      'The booking path connects availability, Stripe test payments, notifications, and guest-host messaging.',
+  },
+]
 
-const today = startOfToday()
-
-function SearchDivider() {
-  return <div className="w-[1px] h-10 bg-slate-200 mx-2 shrink-0" />
-}
-
-function DateSearchField({
-  label,
-  placeholder,
-  value,
-  dateRange,
-  onDateRangeChange,
-}: DateSearchFieldProps) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <div className="flex-1 flex items-center gap-3 px-6 py-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer group">
-          <div className="flex flex-col w-full">
-            <span className="text-xs font-bold text-slate-900">{label}</span>
-            <span className={cn('text-sm', !value && 'text-slate-500')}>
-              {value ? format(value, 'LLL dd') : placeholder}
-            </span>
-          </div>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-auto p-0"
-        align="center"
-        avoidCollisions={false}
-      >
-        <Calendar
-          mode="range"
-          defaultMonth={dateRange?.from}
-          selected={dateRange}
-          onSelect={onDateRangeChange}
-          numberOfMonths={2}
-          disabled={(date) => date < today}
-        />
-      </PopoverContent>
-    </Popover>
-  )
-}
+const trustSignals = [
+  'Admin-reviewed listings',
+  'Stripe test checkout',
+  'Real-time messaging',
+  'Wishlist-ready cards',
+]
 
 export function HomeHero() {
-  const navigate = useNavigate()
-  const [selectedCoords, setSelectedCoords] = useState<{
-    lat: string
-    lon: string
-  } | null>(null)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [guests, setGuests] = useState('')
-  const {
-    containerRef,
-    isSearching,
-    query: location,
-    results,
-    search: searchLocations,
-    selectResult,
-    showExistingResults,
-    showResults,
-  } = useLocationAutocomplete()
-
-  const handleLocationChange = (value: string) => {
-    setSelectedCoords(null)
-    searchLocations(value)
-  }
-
-  const handleSelectResult = (result: LocationSearchResult) => {
-    setSelectedCoords({ lat: result.lat, lon: result.lon })
-    selectResult(result)
-  }
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    let checkInStr = undefined
-    let checkOutStr = undefined
-
-    if (dateRange?.from) {
-      checkInStr = format(dateRange.from, 'yyyy-MM-dd')
-    }
-    if (dateRange?.to) {
-      checkOutStr = format(dateRange.to, 'yyyy-MM-dd')
-    }
-
-    navigate({
-      to: '/listings',
-      search: {
-        lat: selectedCoords?.lat ? Number(selectedCoords.lat) : undefined,
-        lng: selectedCoords?.lon ? Number(selectedCoords.lon) : undefined,
-        loc: location ? location : undefined,
-        checkIn: checkInStr,
-        checkOut: checkOutStr,
-        guests: guests ? Number(guests) : undefined,
-      },
-    })
-  }
-
   return (
-    <div className="relative h-[600px] w-full bg-slate-900 flex flex-col justify-center items-center">
-      {/* Background Image Setup */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
-        style={{ backgroundImage: "url('/images/hero-bg.png')" }}
-      />
+    <div className="bg-white text-slate-950">
+      <section className="relative min-h-[calc(100svh-72px)] overflow-hidden bg-slate-950 text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/hero-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.86)_0%,rgba(15,23,42,0.62)_46%,rgba(15,23,42,0.18)_100%)]" />
 
-      {/* Dark overlay for better contrast */}
-      <div className="absolute inset-0 bg-black/20" />
-
-      {/* Main Content */}
-      <div className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-center drop-shadow-lg">
-          Find your perfect stay
-        </h1>
-
-        {/* Search Bar matching the image structure */}
-        <form
-          onSubmit={handleSearch}
-          className="w-full bg-white rounded-full p-2 flex items-center shadow-2xl relative"
-        >
-          {/* Where Section */}
-          <div
-            ref={containerRef}
-            className="flex-[1.5] flex items-center gap-3 px-6 py-2 hover:bg-slate-100 rounded-full transition-colors cursor-text group relative"
-          >
-            <MapPin className="w-5 h-5 text-slate-700 shrink-0" />
-            <div className="flex flex-col w-full relative">
-              <label
-                htmlFor="location"
-                className="text-xs font-bold text-slate-900 cursor-pointer"
-              >
-                Where
-              </label>
-              <div className="relative w-full">
-                <Input
-                  id="location"
-                  type="text"
-                  placeholder="Search destinations"
-                  className="bg-transparent border-none focus-visible:ring-0 shadow-none outline-none text-sm text-slate-900 placeholder:text-slate-500 w-full p-0 h-5"
-                  value={location}
-                  onChange={(e) => handleLocationChange(e.target.value)}
-                  onFocus={showExistingResults}
-                  autoComplete="off"
-                />
-                {isSearching && (
-                  <Loader2 className="absolute right-0 top-1/2 -translate-y-1/2 size-3 text-muted-foreground animate-spin" />
-                )}
-              </div>
+        <div className="relative mx-auto flex min-h-[calc(100svh-72px)] w-full max-w-7xl flex-col justify-center px-4 py-14 sm:px-6 lg:px-8">
+          <div className="max-w-3xl pb-8 pt-10 sm:pb-12">
+            <div className="mb-5 inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1 text-sm font-medium text-white/90 backdrop-blur">
+              Full-stack rental marketplace
             </div>
-
-            {/* Dropdown Results */}
-            {showResults && results.length > 0 && (
-              <div className="absolute top-[calc(100%+16px)] left-0 w-full bg-white rounded-3xl shadow-xl border border-border overflow-hidden z-50">
-                {results.map((r, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleSelectResult(r)}
-                    className="w-full text-left px-6 py-4 hover:bg-slate-50 transition-colors border-b border-border/50 last:border-b-0 cursor-pointer flex items-center gap-3"
-                  >
-                    <div className="flex size-8 items-center justify-center rounded-full bg-slate-100 shrink-0">
-                      <MapPin className="size-4 text-slate-600" />
-                    </div>
-                    <span className="text-sm text-slate-700 line-clamp-1">
-                      {r.display_name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl lg:text-6xl">
+              StayMate
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/82 sm:text-lg">
+              A polished marketplace for discovering stays, saving favorites,
+              booking trips, messaging hosts, and managing payouts from one
+              coherent product flow.
+            </p>
           </div>
 
-          <SearchDivider />
+          <HomeSearch />
 
-          {/* Check in Section */}
-          <DateSearchField
-            label="Check in"
-            placeholder="Add dates"
-            value={dateRange?.from}
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-          />
-
-          <SearchDivider />
-
-          {/* Check out Section */}
-          <DateSearchField
-            label="Check out"
-            placeholder="Add dates"
-            value={dateRange?.to}
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-          />
-
-          <SearchDivider />
-
-          {/* Guests Section */}
-          <div className="flex-1 flex items-center gap-3 px-6 py-2 hover:bg-slate-100 rounded-full transition-colors cursor-text group">
-            <Users className="w-5 h-5 text-slate-700 shrink-0" />
-            <div className="flex flex-col w-full">
-              <label
-                htmlFor="guests"
-                className="text-xs font-bold text-slate-900 cursor-pointer"
+          <div className="mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
+            {trustSignals.map((signal) => (
+              <div
+                key={signal}
+                className="rounded-lg border border-white/15 bg-white/10 px-3 py-3 text-sm font-medium text-white/90 backdrop-blur"
               >
-                Guests
-              </label>
-              <Input
-                id="guests"
-                type="number"
-                min="1"
-                placeholder="Add guests"
-                className="bg-transparent border-none focus-visible:ring-0 shadow-none outline-none text-sm text-slate-900 placeholder:text-slate-500 w-full p-0 h-5"
-                value={guests}
-                onChange={(e) => setGuests(e.target.value)}
-              />
-            </div>
+                {signal}
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          {/* Search Button */}
-          <Button
-            type="submit"
-            className="ml-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-6 h-auto flex items-center gap-2 font-semibold transition-colors shrink-0 shadow-none"
-          >
-            <Search className="w-5 h-5" />
-            <span>Search</span>
-          </Button>
-        </form>
-      </div>
+      <HomeFeaturedListings />
+
+      <section className="border-y border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <HomeSectionHeader
+            eyebrow="Product flow"
+            title="A real guest journey, not a static catalog"
+            description="The homepage introduces the same flows recruiters will inspect deeper in the app: discovery, saving, checkout, messaging, and post-booking activity."
+          />
+
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {workflowSteps.map((step, index) => (
+              <article
+                key={step.title}
+                className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+              >
+                <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-slate-950 text-sm font-semibold text-white">
+                  {index + 1}
+                </div>
+                <h3 className="text-lg font-semibold text-slate-950">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  {step.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <PlatformCredibility />
+
+      <section className="bg-slate-950 text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">
+              Ready to explore
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-normal sm:text-4xl">
+              Start with listings, then follow the complete booking workflow.
+            </h2>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+            <Button
+              asChild
+              className="h-11 rounded-lg bg-white px-5 text-slate-950 hover:bg-slate-100"
+            >
+              <Link to="/listings">
+                Browse stays
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 rounded-lg border-white/30 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white"
+            >
+              <Link to="/become-host">Become a host</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
