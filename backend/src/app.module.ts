@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -39,6 +39,8 @@ import { MessagesModule } from './modules/messages/messages.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { WishlistsModule } from './modules/wishlists/wishlists.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RefreshToken } from './modules/auth/entities/refresh-token.entity';
+import { PasswordResetToken } from './modules/auth/entities/password-reset-token.entity';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -74,6 +76,8 @@ import { ScheduleModule } from '@nestjs/schedule';
           Review,
           User,
           Wishlist,
+          RefreshToken,
+          PasswordResetToken,
         ],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
       }),
@@ -95,6 +99,8 @@ import { ScheduleModule } from '@nestjs/schedule';
       Payout,
       Review,
       Wishlist,
+      RefreshToken,
+      PasswordResetToken,
     ]),
     UsersModule,
     AuthModule,
@@ -116,6 +122,8 @@ import { ScheduleModule } from '@nestjs/schedule';
   providers: [AppService, SeedService],
 })
 export class AppModule {}
+
+
 
 
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
 import { backendBaseUrl } from '@/lib/api/urls'
 import { useAuthStore } from '@/features/auth'
@@ -21,7 +21,7 @@ export function useMessagesSocket({
   onMessagesRead,
   onMessageError,
 }: UseMessagesSocketOptions) {
-  const token = useAuthStore((state) => state.token)
+  const token = useAuthStore((state) => state.accessToken)
   const socketRef = useRef<Socket | null>(null)
   const onMessageCreatedRef = useRef(onMessageCreated)
   const onMessagesReadRef = useRef(onMessagesRead)
@@ -111,5 +111,6 @@ export function useMessagesSocket({
     [connectionError, isConnected, markRead, sendMessage],
   )
 }
+
 
 

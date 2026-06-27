@@ -1,10 +1,19 @@
-import { apiClient } from '@/lib/api/client'
-import type { LoginFormData, RegisterFormData } from '../schemas/auth.schema'
-import type { User, LoginResponse, BackendResponse } from '../types/auth.types'
+﻿import { apiClient } from '@/lib/api/client'
+import type {
+  ForgotPasswordFormData,
+  LoginFormData,
+  RegisterFormData,
+  ResetPasswordFormData,
+} from '../schemas/auth.schema'
+import type {
+  User,
+  LoginResponse,
+  BackendResponse,
+  RefreshResponse,
+  ForgotPasswordResponse,
+  MessageResponse,
+} from '../types/auth.types'
 
-/**
- * Log in a user with email and password
- */
 export async function loginFn(data: LoginFormData): Promise<LoginResponse> {
   const response = await apiClient.post<BackendResponse<LoginResponse>>(
     '/auth/login',
@@ -13,11 +22,7 @@ export async function loginFn(data: LoginFormData): Promise<LoginResponse> {
   return response.data.data
 }
 
-/**
- * Register a new user
- */
 export async function registerFn(data: RegisterFormData): Promise<User> {
-  // Map frontend `fullName` to backend `name`
   const payload = {
     email: data.email,
     password: data.password,
@@ -30,9 +35,40 @@ export async function registerFn(data: RegisterFormData): Promise<User> {
   return response.data.data
 }
 
-/**
- * Fetch the current user profile
- */
+export async function refreshFn(): Promise<RefreshResponse> {
+  const response = await apiClient.post<BackendResponse<RefreshResponse>>(
+    '/auth/refresh',
+  )
+  return response.data.data
+}
+
+export async function logoutFn(): Promise<MessageResponse> {
+  const response = await apiClient.post<BackendResponse<MessageResponse>>(
+    '/auth/logout',
+  )
+  return response.data.data
+}
+
+export async function forgotPasswordFn(
+  data: ForgotPasswordFormData,
+): Promise<ForgotPasswordResponse> {
+  const response = await apiClient.post<BackendResponse<ForgotPasswordResponse>>(
+    '/auth/forgot-password',
+    data,
+  )
+  return response.data.data
+}
+
+export async function resetPasswordFn(
+  data: ResetPasswordFormData & { token: string },
+): Promise<MessageResponse> {
+  const response = await apiClient.post<BackendResponse<MessageResponse>>(
+    '/auth/reset-password',
+    data,
+  )
+  return response.data.data
+}
+
 export async function getMeFn(): Promise<User> {
   const response = await apiClient.get<BackendResponse<User>>('/auth/me')
   return response.data.data

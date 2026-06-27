@@ -1,18 +1,18 @@
-import { create } from 'zustand'
+﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface AuthState {
-  token: string | null
-  setToken: (token: string) => void
-  clearToken: () => void
+  accessToken: string | null
+  setAccessToken: (token: string) => void
+  clearAccessToken: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      token: null,
-      setToken: (token) => set({ token }),
-      clearToken: () => set({ token: null }),
+      accessToken: null,
+      setAccessToken: (accessToken) => set({ accessToken }),
+      clearAccessToken: () => set({ accessToken: null }),
     }),
     {
       name: 'staymate-auth-store',

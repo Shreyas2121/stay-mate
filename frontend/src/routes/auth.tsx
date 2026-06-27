@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+﻿import { createFileRoute, Link } from '@tanstack/react-router'
 import { useAuthStore, getMeFn, loginFn, authKeys } from '@/features/auth'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 export const Route = createFileRoute('/auth')({ component: AuthSandbox })
 
 function AuthSandbox() {
-  const token = useAuthStore((s) => s.token)
+  const token = useAuthStore((s) => s.accessToken)
   const isAuthenticated = !!token
   const queryClient = useQueryClient()
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
@@ -43,7 +43,7 @@ function AuthSandbox() {
       setSuccessMsg('Quick login successful!')
       setErrorMsg(null)
       // Save token
-      useAuthStore.getState().setToken(data.access_token)
+      useAuthStore.getState().setAccessToken(data.access_token)
       // Fetch profile and seed into query cache
       try {
         await queryClient.fetchQuery({
@@ -68,7 +68,7 @@ function AuthSandbox() {
   }
 
   const handleLogout = () => {
-    useAuthStore.getState().clearToken()
+    useAuthStore.getState().clearAccessToken()
     queryClient.clear()
     setSuccessMsg('Logged out successfully.')
     setErrorMsg(null)
@@ -303,3 +303,4 @@ function AuthSandbox() {
     </div>
   )
 }
+

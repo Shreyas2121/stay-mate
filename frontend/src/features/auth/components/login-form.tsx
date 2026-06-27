@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+﻿import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { AlertCircle, Loader2 } from 'lucide-react'
@@ -95,17 +95,17 @@ export function LoginForm() {
               >
                 Password
               </FieldLabel>
-              <a
-                href="#"
+              <Link
+                to="/forgot-password"
                 className="text-xs font-semibold text-primary hover:underline"
               >
                 Forgot Password?
-              </a>
+              </Link>
             </div>
             <Input
               id="password-login"
               type="password"
-              placeholder="••••••••"
+              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
               autoComplete="current-password"
               disabled={loginMutation.isPending}
               aria-invalid={!!errors.password}
@@ -126,7 +126,7 @@ export function LoginForm() {
         >
           {loginMutation.isPending ? (
             <>
-              <Loader2 className="size-4 animate-spin" /> Logging in…
+              <Loader2 className="size-4 animate-spin" /> Logging inâ€¦
             </>
           ) : (
             'Login'
@@ -149,3 +149,4 @@ export function LoginForm() {
     </>
   )
 }
+

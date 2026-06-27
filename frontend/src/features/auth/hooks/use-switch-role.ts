@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+﻿import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api/client'
 import { useAuthStore } from '../store/auth.store'
 import type { User, BackendResponse } from '../types/auth.types'
@@ -20,9 +20,7 @@ export function useSwitchRole() {
       return response.data.data
     },
     onSuccess: (data) => {
-      // Update token
-      useAuthStore.getState().setToken(data.access_token)
-      // Seed the returned user directly into query cache
+      useAuthStore.getState().setAccessToken(data.access_token)
       queryClient.setQueryData(authKeys.me, data.user)
     },
   })

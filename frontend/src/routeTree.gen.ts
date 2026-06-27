@@ -9,11 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ListingsRouteImport } from './routes/listings'
 import { Route as HostRouteImport } from './routes/host'
 import { Route as GuestRouteImport } from './routes/guest'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as BecomeHostRouteImport } from './routes/become-host'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -39,6 +41,11 @@ import { Route as BookingsBookingIdConfirmationRouteImport } from './routes/book
 import { Route as AdminHostsHostIdRouteImport } from './routes/admin.hosts_.$hostId'
 import { Route as AdminListingsListingIdBookingsRouteImport } from './routes/admin.listings.$listingId.bookings'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -62,6 +69,11 @@ const HostRoute = HostRouteImport.update({
 const GuestRoute = GuestRouteImport.update({
   id: '/guest',
   path: '/guest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BecomeHostRoute = BecomeHostRouteImport.update({
@@ -192,11 +204,13 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/become-host': typeof BecomeHostRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/guest': typeof GuestRouteWithChildren
   '/host': typeof HostRouteWithChildren
   '/listings': typeof ListingsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/host-approvals': typeof AdminHostApprovalsRoute
@@ -223,11 +237,13 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/become-host': typeof BecomeHostRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/guest': typeof GuestRouteWithChildren
   '/host': typeof HostRouteWithChildren
   '/listings': typeof ListingsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/host-approvals': typeof AdminHostApprovalsRoute
@@ -255,11 +271,13 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/become-host': typeof BecomeHostRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/guest': typeof GuestRouteWithChildren
   '/host': typeof HostRouteWithChildren
   '/listings': typeof ListingsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/host-approvals': typeof AdminHostApprovalsRoute
@@ -288,11 +306,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become-host'
+    | '/forgot-password'
     | '/guest'
     | '/host'
     | '/listings'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/admin/coupons'
     | '/admin/finance'
     | '/admin/host-approvals'
@@ -319,11 +339,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become-host'
+    | '/forgot-password'
     | '/guest'
     | '/host'
     | '/listings'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/admin/coupons'
     | '/admin/finance'
     | '/admin/host-approvals'
@@ -350,11 +372,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/become-host'
+    | '/forgot-password'
     | '/guest'
     | '/host'
     | '/listings'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/admin/coupons'
     | '/admin/finance'
     | '/admin/host-approvals'
@@ -382,11 +406,13 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   BecomeHostRoute: typeof BecomeHostRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   GuestRoute: typeof GuestRouteWithChildren
   HostRoute: typeof HostRouteWithChildren
   ListingsRoute: typeof ListingsRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   CheckoutListingIdRoute: typeof CheckoutListingIdRoute
   ListingsListingIdRoute: typeof ListingsListingIdRoute
   BookingsBookingIdConfirmationRoute: typeof BookingsBookingIdConfirmationRoute
@@ -394,6 +420,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -427,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/guest'
       fullPath: '/guest'
       preLoaderRoute: typeof GuestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/become-host': {
@@ -663,11 +703,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   BecomeHostRoute: BecomeHostRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   GuestRoute: GuestRouteWithChildren,
   HostRoute: HostRouteWithChildren,
   ListingsRoute: ListingsRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   CheckoutListingIdRoute: CheckoutListingIdRoute,
   ListingsListingIdRoute: ListingsListingIdRoute,
   BookingsBookingIdConfirmationRoute: BookingsBookingIdConfirmationRoute,

@@ -1,9 +1,10 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+﻿import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from '@/components/ui/sonner'
+import { useSessionBootstrap } from '@/features/auth'
 
 import { queryClient } from '../lib/api/query-client'
 import '../styles.css'
@@ -19,6 +20,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootWrapper() {
   return (
     <QueryClientProvider client={queryClient}>
+      <SessionBootstrap />
       <Outlet />
       <Toaster richColors position="top-right" />
       <ReactQueryDevtools initialIsOpen={false} position="bottom" />
@@ -35,5 +37,11 @@ function RootWrapper() {
       />
     </QueryClientProvider>
   )
+}
+
+
+function SessionBootstrap() {
+  useSessionBootstrap()
+  return null
 }
 

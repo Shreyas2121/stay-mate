@@ -1,20 +1,19 @@
 ﻿import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useAuthStore, AuthLayout, RegisterForm } from '@/features/auth'
+import { AuthLayout, ForgotPasswordForm, useAuthStore } from '@/features/auth'
 
-export const Route = createFileRoute('/register')({
+export const Route = createFileRoute('/forgot-password')({
   beforeLoad: () => {
     if (useAuthStore.getState().accessToken) {
       throw redirect({ to: '/' })
     }
   },
-  component: RegisterPage,
+  component: ForgotPasswordPage,
 })
 
-function RegisterPage() {
+function ForgotPasswordPage() {
   return (
     <AuthLayout>
-      <RegisterForm />
+      <ForgotPasswordForm />
     </AuthLayout>
   )
 }
-

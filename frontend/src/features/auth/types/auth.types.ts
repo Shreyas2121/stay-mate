@@ -1,4 +1,4 @@
-export interface User {
+﻿export interface User {
   id: string
   email: string
   name?: string | null
@@ -6,8 +6,22 @@ export interface User {
   activeRole: 'guest' | 'host'
 }
 
-export interface LoginResponse {
+export interface AuthTokenResponse {
   access_token: string
+  user: User
+}
+
+export type LoginResponse = AuthTokenResponse
+export type RefreshResponse = AuthTokenResponse
+
+export interface ForgotPasswordResponse {
+  message: string
+  devResetToken?: string
+  resetUrl?: string
+}
+
+export interface MessageResponse {
+  message: string
 }
 
 export interface BackendResponse<T> {
