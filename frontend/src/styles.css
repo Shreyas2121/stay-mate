@@ -1,0 +1,627 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ──────────────────────────────────────────────
+   Reset
+   ────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ──────────────────────────────────────────────
+   Tailwind v4 Theme Inline
+   ────────────────────────────────────────────── */
+@theme inline {
+  /* Font stacks */
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+
+  /* Border radius – from design shapes spec */
+  --radius: 0.375rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-4xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Spacing – 4px baseline */
+  --spacing: 0.25rem;
+
+  /* Letter spacing */
+  --tracking-tighter: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.04em;
+  --tracking-widest: 0.1em;
+
+  /* Shadows – from elevation spec */
+  --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-xs: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 12px 24px 0 rgb(0 0 0 / 0.08);
+  --shadow-xl: 0 20px 40px -4px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -6px rgb(0 0 0 / 0.15);
+
+  /* Color token mapping → Tailwind */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ── Horizon Logic Extended Tokens ── */
+  --color-surface: var(--hl-surface);
+  --color-surface-dim: var(--hl-surface-dim);
+  --color-surface-bright: var(--hl-surface-bright);
+  --color-surface-subtle: var(--hl-surface-subtle);
+  --color-on-surface: var(--hl-on-surface);
+  --color-on-surface-variant: var(--hl-on-surface-variant);
+  --color-primary-container: var(--hl-primary-container);
+  --color-on-primary-container: var(--hl-on-primary-container);
+  --color-secondary-container: var(--hl-secondary-container);
+  --color-on-secondary-container: var(--hl-on-secondary-container);
+  --color-tertiary: var(--hl-tertiary);
+  --color-on-tertiary: var(--hl-on-tertiary);
+  --color-tertiary-container: var(--hl-tertiary-container);
+  --color-on-tertiary-container: var(--hl-on-tertiary-container);
+  --color-outline: var(--hl-outline);
+  --color-outline-variant: var(--hl-outline-variant);
+  --color-border-muted: var(--hl-border-muted);
+
+  /* Status colors */
+  --color-success: var(--hl-status-success);
+  --color-warning: var(--hl-status-warning);
+  --color-error: var(--hl-status-error);
+  --color-info: var(--hl-status-info);
+}
+
+/* ──────────────────────────────────────────────
+   Light Theme – Horizon Logic "Indigo-Lead"
+   ────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Shadcn core tokens */
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+
+  --card: #ffffff;
+  --card-foreground: #0b1c30;
+
+  --popover: #ffffff;
+  --popover-foreground: #0b1c30;
+
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+
+  --secondary: #dae2fd;
+  --secondary-foreground: #565e74;
+
+  --muted: #e5eeff;
+  --muted-foreground: #434655;
+
+  --accent: #dce9ff;
+  --accent-foreground: #0b1c30;
+
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+
+  --border: #c3c6d7;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+
+  --radius: 0.375rem;
+
+  /* Charts */
+  --chart-1: #2563eb;
+  --chart-2: #004ac6;
+  --chart-3: #3e3fcc;
+  --chart-4: #585be6;
+  --chart-5: #565e74;
+
+  /* Sidebar */
+  --sidebar: #eff4ff;
+  --sidebar-foreground: #0b1c30;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dce9ff;
+  --sidebar-accent-foreground: #0b1c30;
+  --sidebar-border: #c3c6d7;
+  --sidebar-ring: #2563eb;
+
+  /* ── Horizon Logic Extended Palette ── */
+  --hl-surface: #f8f9ff;
+  --hl-surface-dim: #cbdbf5;
+  --hl-surface-bright: #f8f9ff;
+  --hl-surface-subtle: #f8fafc;
+  --hl-on-surface: #0b1c30;
+  --hl-on-surface-variant: #434655;
+  --hl-primary-container: #2563eb;
+  --hl-on-primary-container: #eeefff;
+  --hl-secondary-container: #dae2fd;
+  --hl-on-secondary-container: #5c647a;
+  --hl-tertiary: #3e3fcc;
+  --hl-on-tertiary: #ffffff;
+  --hl-tertiary-container: #585be6;
+  --hl-on-tertiary-container: #f1eeff;
+  --hl-outline: #737686;
+  --hl-outline-variant: #c3c6d7;
+  --hl-border-muted: #e2e8f0;
+
+  /* Status */
+  --hl-status-success: #10b981;
+  --hl-status-warning: #f59e0b;
+  --hl-status-error: #ef4444;
+  --hl-status-info: #0ea5e9;
+
+  /* Inverse (for chips, snackbars) */
+  --hl-inverse-surface: #213145;
+  --hl-inverse-on-surface: #eaf1ff;
+  --hl-inverse-primary: #b4c5ff;
+}
+
+/* ──────────────────────────────────────────────
+   Dark Theme
+   ────────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+
+  --background: #0b1c30;
+  --foreground: #eaf1ff;
+
+  --card: #162a42;
+  --card-foreground: #eaf1ff;
+
+  --popover: #162a42;
+  --popover-foreground: #eaf1ff;
+
+  --primary: #b4c5ff;
+  --primary-foreground: #00174b;
+
+  --secondary: #3f465c;
+  --secondary-foreground: #dae2fd;
+
+  --muted: #1a2d42;
+  --muted-foreground: #bec6e0;
+
+  --accent: #243555;
+  --accent-foreground: #dbe1ff;
+
+  --destructive: #ff897d;
+  --destructive-foreground: #690005;
+
+  --border: #3a4a5e;
+  --input: #3a4a5e;
+  --ring: #b4c5ff;
+
+  --chart-1: #b4c5ff;
+  --chart-2: #8da3e8;
+  --chart-3: #c0c1ff;
+  --chart-4: #7f80d4;
+  --chart-5: #bec6e0;
+
+  --sidebar: #0f2236;
+  --sidebar-foreground: #eaf1ff;
+  --sidebar-primary: #b4c5ff;
+  --sidebar-primary-foreground: #00174b;
+  --sidebar-accent: #243555;
+  --sidebar-accent-foreground: #dbe1ff;
+  --sidebar-border: #3a4a5e;
+  --sidebar-ring: #b4c5ff;
+
+  --hl-surface: #0b1c30;
+  --hl-surface-dim: #091525;
+  --hl-surface-bright: #1a2d42;
+  --hl-surface-subtle: #0f2236;
+  --hl-on-surface: #eaf1ff;
+  --hl-on-surface-variant: #bec6e0;
+  --hl-primary-container: #003ea8;
+  --hl-on-primary-container: #dbe1ff;
+  --hl-secondary-container: #3f465c;
+  --hl-on-secondary-container: #dae2fd;
+  --hl-tertiary: #c0c1ff;
+  --hl-on-tertiary: #07006c;
+  --hl-tertiary-container: #2f2ebe;
+  --hl-on-tertiary-container: #e1e0ff;
+  --hl-outline: #8d90a1;
+  --hl-outline-variant: #434655;
+  --hl-border-muted: #3a4a5e;
+
+  --hl-status-success: #34d399;
+  --hl-status-warning: #fbbf24;
+  --hl-status-error: #f87171;
+  --hl-status-info: #38bdf8;
+
+  --hl-inverse-surface: #eaf1ff;
+  --hl-inverse-on-surface: #0b1c30;
+  --hl-inverse-primary: #004ac6;
+}
+
+/* ──────────────────────────────────────────────
+   Base Styles
+   ────────────────────────────────────────────── */
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  /* Selection highlight */
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  /* Focus visible ring */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Typography – Horizon Logic Scale
+   ────────────────────────────────────────────── */
+@layer components {
+  /* Display */
+  .text-display-lg {
+    font-family: var(--font-sans);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg-mobile {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Headlines */
+  .text-headline-lg {
+    font-family: var(--font-sans);
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 38px;
+    letter-spacing: -0.01em;
+  }
+
+  .text-headline-md {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+
+  .text-headline-sm {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  /* Body */
+  .text-body-lg {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+  }
+
+  .text-body-md {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+
+  .text-body-sm {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  /* Labels */
+  .text-label-md {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .text-label-sm {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Code */
+  .text-code-md {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Elevation – Tonal Layers & Ambient Shadows
+   ────────────────────────────────────────────── */
+@layer components {
+  /* Level 0 – Floor */
+  .elevation-0 {
+    background-color: var(--hl-surface-subtle);
+  }
+
+  /* Level 1 – Cards (1px border, no shadow) */
+  .elevation-1 {
+    background-color: var(--card);
+    border: 1px solid var(--hl-border-muted);
+  }
+
+  /* Level 2 – Interactive (hover state) */
+  .elevation-2 {
+    background-color: var(--card);
+    border: 1px solid var(--hl-border-muted);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  }
+
+  /* Level 3 – Overlays (modals, drawers) */
+  .elevation-3 {
+    background-color: var(--card);
+    box-shadow: 0 12px 24px rgb(0 0 0 / 0.1);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Status Badges
+   ────────────────────────────────────────────── */
+@layer components {
+  .badge-success {
+    background-color: color-mix(
+      in srgb,
+      var(--hl-status-success) 10%,
+      transparent
+    );
+    color: var(--hl-status-success);
+  }
+
+  .badge-warning {
+    background-color: color-mix(
+      in srgb,
+      var(--hl-status-warning) 10%,
+      transparent
+    );
+    color: var(--hl-status-warning);
+  }
+
+  .badge-error {
+    background-color: color-mix(
+      in srgb,
+      var(--hl-status-error) 10%,
+      transparent
+    );
+    color: var(--hl-status-error);
+  }
+
+  .badge-info {
+    background-color: color-mix(
+      in srgb,
+      var(--hl-status-info) 10%,
+      transparent
+    );
+    color: var(--hl-status-info);
+  }
+
+  [class*='badge-'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Layout Containers
+   ────────────────────────────────────────────── */
+@layer components {
+  .container-app {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .container-app {
+      padding-inline: 24px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-app {
+      padding-inline: 40px;
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Card Component Base
+   ────────────────────────────────────────────── */
+@layer components {
+  .card-listing {
+    background-color: var(--card);
+    border: 1px solid var(--hl-border-muted);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .card-listing:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+    transform: translateY(-1px);
+  }
+
+  .card-listing img {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Input Focus Ring – from design spec
+   ────────────────────────────────────────────── */
+@layer components {
+  .input-field {
+    border: 1px solid var(--hl-border-muted);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 24px;
+    background-color: var(--card);
+    color: var(--foreground);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Messaging Bubbles
+   ────────────────────────────────────────────── */
+@layer components {
+  .bubble-guest {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)
+      var(--radius-lg);
+    padding: 10px 14px;
+  }
+
+  .bubble-host {
+    background-color: var(--hl-surface-subtle);
+    color: var(--foreground);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)
+      var(--radius-sm);
+    padding: 10px 14px;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Responsive Typography
+   ────────────────────────────────────────────── */
+@media (max-width: 639px) {
+  .text-display-lg {
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Smooth transitions for theme switching
+   ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+  }
+
+  /* Opt out for elements that need instant response */
+  button,
+  [role='button'],
+  input,
+  select,
+  textarea,
+  a {
+    transition-property:
+      background-color, border-color, color, fill, stroke, box-shadow,
+      transform, opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+  }
+}
