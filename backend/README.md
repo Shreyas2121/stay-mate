@@ -1,98 +1,176 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# StayMate Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS API for the StayMate rental marketplace. This service owns authentication, listings, availability, bookings, coupons, payments, payouts, messaging, notifications, reviews, wishlists, and admin operations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Responsibilities
 
-## Description
+- expose the REST API under `/api/v1`
+- serve Swagger docs for API inspection
+- persist marketplace state in PostgreSQL
+- issue and refresh JWT-based auth sessions
+- create Stripe checkout sessions and process webhook callbacks
+- power real-time messaging via Socket.IO
+- seed recruiter-friendly demo data for local review
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack
 
-## Project setup
+- NestJS 11
+- TypeScript
+- PostgreSQL
+- TypeORM
+- JWT + Passport
+- Stripe
+- Socket.IO
+- Swagger
+- Jest + Supertest
 
-```bash
-$ pnpm install
+## Project structure
+
+```text
+src/
+|-- common/          # guards, decorators, filters, interceptors, base entity
+|-- config/          # env validation and Stripe config
+|-- database/        # seed scripts and demo assets
+|-- modules/
+|   |-- admin/
+|   |-- amenities/
+|   |-- auth/
+|   |-- availability/
+|   |-- bookings/
+|   |-- coupons/
+|   |-- host-profiles/
+|   |-- listings/
+|   |-- messages/
+|   |-- notifications/
+|   |-- payments/
+|   |-- payouts/
+|   |-- reviews/
+|   |-- users/
+|   `-- wishlists/
+|-- app.module.ts
+`-- main.ts
 ```
 
-## Compile and run the project
+## Local setup
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- Docker Desktop or a local PostgreSQL instance
+- Stripe test credentials
+
+### Database
+
+Start PostgreSQL from this directory:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+docker compose up -d
 ```
 
-## Run tests
+The included compose file starts PostgreSQL 17 on `localhost:5433` with:
+
+- database: `stay-mate`
+- username: `admin`
+- password: `admin`
+
+### Environment variables
+
+Create `backend/.env`:
+
+```env
+NODE_ENV=development
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5433
+DB_USERNAME=admin
+DB_PASSWORD=admin
+DB_NAME=stay-mate
+JWT_SECRET=replace-with-a-long-random-string
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+FRONTEND_URL=http://localhost:3005
+```
+
+These variables are validated at startup in `src/config/env.validation.ts`.
+
+### Run the service
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm install
+pnpm db:seed
+pnpm start:dev
 ```
 
-## Deployment
+Runtime endpoints:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- API base: `http://localhost:3000/api/v1`
+- Swagger: `http://localhost:3000/test/docs`
+- uploaded assets: `http://localhost:3000/uploads/...`
+- Socket.IO namespace: `ws://localhost:3000/messages`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Demo data
+
+`pnpm db:seed` creates:
+
+- admin user: `admin@staymate.com` / `admin123`
+- verified host users:
+  - `alice@staymate.com` / `host123`
+  - `bob@staymate.com` / `host123`
+  - `charlie@staymate.com` / `host123`
+- amenity categories and system amenities
+- 35 active listings with seeded photos
+
+`pnpm db:seed:bookings` adds booking and earnings records after guest accounts exist.
+
+## Scripts
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm start
+pnpm start:dev
+pnpm start:prod
+pnpm build
+pnpm lint
+pnpm test
+pnpm test:e2e
+pnpm test:cov
+pnpm db:seed
+pnpm db:seed:bookings
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Key implementation details
 
-## Resources
+### Auth and session model
 
-Check out a few resources that may come in handy when working with NestJS:
+- Access tokens are sent in the `Authorization` header.
+- Refresh flow is cookie-based and supported by the frontend axios interceptor.
+- Role-sensitive behavior is enforced with JWT guards and role decorators.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Booking and payment flow
 
-## Support
+- Checkout is created through the `payments` module using Stripe test mode.
+- The Nest app is started with `rawBody: true` so Stripe webhooks can be verified safely.
+- Booking confirmation is driven by webhook processing rather than optimistic client-side status changes.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Messaging
 
-## Stay in touch
+- Socket.IO is mounted at the `/messages` namespace.
+- Clients authenticate with a bearer token during the socket handshake.
+- Conversation rooms are keyed by conversation ID.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### File handling
 
-## License
+- Listing photos and avatars are served from the local `uploads/` directory.
+- Static assets are mounted through `useStaticAssets(..., { prefix: '/uploads' })`.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Testing
+
+- Unit tests cover several domain services, including auth, reviews, messaging, notifications, and wishlists.
+- E2E coverage is wired through `test/jest-e2e.json`.
+- Run `pnpm test:e2e` after the database and env config are available.
+
+## Current engineering notes
+
+- TypeORM `synchronize` is enabled outside production. Good for rapid iteration, but migrations should replace it before a real deployment.
+- CORS is currently hardcoded to `http://localhost:3005` in `main.ts`.
+- Swagger is mounted at `/test/docs`; renaming this to `/docs` would be a reasonable polish step.

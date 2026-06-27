@@ -1,201 +1,154 @@
-Welcome to your new TanStack Start app!
+# StayMate Frontend
 
-# Getting Started
+React client for the StayMate rental marketplace. This app covers guest discovery and booking, host listing management, admin workflows, role switching, notifications, and realtime messaging.
 
-To run this application:
+## Stack
+
+- React 19
+- Vite
+- TanStack Router
+- TanStack Query
+- Zustand
+- Tailwind CSS
+- Stripe Elements
+- Socket.IO client
+- Leaflet
+- Vitest
+
+## What the frontend includes
+
+- landing page and listing discovery
+- listing details with booking sidebar
+- Stripe checkout and booking confirmation screens
+- auth flows: register, login, forgot password, reset password
+- guest dashboard: trips, saved listings, messages
+- host onboarding flow with multi-step verification form
+- host dashboard: listings, reservations, earnings, reviews, messages
+- admin dashboard: host approvals, hosts, coupons, payouts, finance, listing bookings
+
+## Project structure
+
+```text
+src/
+|-- components/      # shared UI, layouts, and small reusable pieces
+|-- features/        # domain-oriented feature modules
+|   |-- admin/
+|   |-- auth/
+|   |-- bookings/
+|   |-- checkout/
+|   |-- host-dashboard/
+|   |-- host-onboarding/
+|   |-- listings/
+|   |-- messages/
+|   |-- notifications/
+|   |-- reviews/
+|   `-- wishlists/
+|-- lib/             # axios client, query client, env URL helpers, Stripe setup
+|-- routes/          # file-based TanStack Router routes
+|-- styles.css
+`-- main.tsx
+```
+
+## Local setup
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- running StayMate backend on `http://localhost:3000`
+
+### Environment variables
+
+Create `frontend/.env.local`:
+
+```env
+BE_URL=http://localhost:3000
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+```
+
+Notes:
+
+- `BE_URL` is allowed because Vite is configured with `envPrefix: ['VITE_', 'BE_']`.
+- API requests are sent to `${BE_URL}/api/v1`.
+
+### Run the app
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-# Building For Production
+Default local URL: `http://localhost:3005`
 
-To build this application for production:
+## Scripts
 
 ```bash
+pnpm dev
 pnpm build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
+pnpm preview
 pnpm test
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
-
-## Linting & Formatting
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
-```bash
 pnpm lint
 pnpm format
 pnpm check
 ```
 
-## Routing
+## Routing model
 
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
+The app uses file-based routing. The most important route groups are:
 
-### Adding A Route
+- public routes: `/`, `/listings`, `/listings/$listingId`
+- auth routes: `/login`, `/register`, `/forgot-password`, `/reset-password`
+- guest routes: `/guest/*`
+- host routes: `/host/*`
+- admin routes: `/admin/*`
+- checkout and booking confirmation routes
 
-To add a new route to your application just add a new file in the `./src/routes` directory.
+This structure makes role-focused product areas easy to review in interviews and simple to expand without central route config churn.
 
-TanStack will automatically generate the content of the route file for you.
+## Client architecture
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+### Data access
 
-### Adding Links
+- `src/lib/api/client.ts` configures a shared axios client.
+- Access tokens are attached from Zustand auth state.
+- A 401 response triggers an automatic refresh request and retries the original call.
+- TanStack Query manages caching and request lifecycle behavior.
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+### Feature boundaries
 
-```tsx
-import { Link } from '@tanstack/react-router'
-```
+Each feature owns its API layer, types, and screen components. That keeps domain behavior close together and prevents route files from becoming orchestration-heavy.
 
-Then anywhere in your JSX you can use it like so:
+### Checkout
 
-```tsx
-<Link to="/about">About</Link>
-```
+- Stripe Elements is initialized in `src/lib/stripe.ts`.
+- Backend checkout session creation and booking verification live in the checkout feature.
 
-This will create a link that will navigate to the `/about` route.
+### Messaging
 
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
+- Socket connectivity lives in `features/messages/hooks/use-messages-socket.ts`.
+- Realtime chat is scoped to authenticated users and confirmed-booking conversations.
 
-### Using A Layout
+### Maps and search
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
+- Leaflet is used for listing location display.
+- Search UI components live under shared and listings-specific feature folders.
 
-Here is an example layout that includes a header:
+## UI approach
 
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+- shared primitives are under `src/components/ui`
+- higher-level layouts live under `src/components/layouts`
+- feature screens stay inside their domain folders rather than a global pages directory
 
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
+This split reads better in code review than a flat component tree and matches how product teams usually scale React apps.
 
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
+## Testing
 
-## Server Functions
+- frontend tests run with Vitest
+- auth schema validation already includes a test file
+- run `pnpm test` for the current suite
 
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
+## Current engineering notes
 
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- The app assumes the backend is running with credentials-enabled CORS from `http://localhost:3005`.
+- API base URL generation is centralized in `src/lib/api/urls.ts`, so environment mismatches usually show up quickly.
+- The repo still contains one backup file, `src/features/home/old-index.bak.tsx`, which should not be treated as active app code.
