@@ -95,7 +95,9 @@ export function Pagination({
               size="icon"
               className={cn(
                 'size-9 rounded-full font-medium text-sm',
-                isCurrent ? 'bg-slate-900 text-white hover:bg-slate-800' : 'text-slate-600'
+                isCurrent
+                  ? 'bg-slate-900 text-white hover:bg-slate-800'
+                  : 'text-slate-600',
               )}
               onClick={() => onPageChange(pageNum)}
               aria-label={`Go to page ${pageNum}`}

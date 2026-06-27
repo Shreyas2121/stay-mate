@@ -1,4 +1,14 @@
-import { IsInt, IsOptional, Min, IsEnum, IsNumber, Max } from 'class-validator';
+﻿import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+  Max,
+  Min,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PropertyType } from '../enums/listing.enum';
@@ -20,6 +30,24 @@ export class GetListingsFilterDto {
   @Min(1)
   @Type(() => Number)
   guestCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'Requested check-in date',
+    type: String,
+    format: 'date',
+  })
+  @IsOptional()
+  @IsDateString()
+  checkIn?: string;
+
+  @ApiPropertyOptional({
+    description: 'Requested check-out date',
+    type: String,
+    format: 'date',
+  })
+  @IsOptional()
+  @IsDateString()
+  checkOut?: string;
 
   @ApiPropertyOptional({
     description: 'Page number',
@@ -127,4 +155,19 @@ export class GetListingsFilterDto {
     return value;
   })
   propertyTypes?: PropertyType[];
+
+  @ApiPropertyOptional({
+    description: 'List of amenity ids to require on the listing',
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') return value.split(',').filter(Boolean);
+    return value;
+  })
+  amenityIds?: string[];
 }

@@ -1,4 +1,5 @@
-import {
+﻿import {
+  BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
@@ -399,9 +400,6 @@ export class ListingsService {
   }> {
     const queryBuilder = this.listingRepository
       .createQueryBuilder('listing')
-      .leftJoinAndSelect('listing.photos', 'photo')
-      .leftJoinAndSelect('listing.amenities', 'amenity')
-      .leftJoinAndSelect('amenity.category', 'category')
       .where('listing.status = :status', { status: ListingStatus.Active });
 
     if (filterDto.guestCount) {
@@ -423,15 +421,91 @@ export class ListingsService {
     }
 
     if (filterDto.minPrice !== undefined) {
-      queryBuilder.andWhere('listing.price >= :minPrice', { minPrice: filterDto.minPrice });
+      queryBuilder.andWhere('listing.price >= :minPrice', {
+        minPrice: filterDto.minPrice,
+      });
     }
 
     if (filterDto.maxPrice !== undefined) {
-      queryBuilder.andWhere('listing.price <= :maxPrice', { maxPrice: filterDto.maxPrice });
+      queryBuilder.andWhere('listing.price <= :maxPrice', {
+        maxPrice: filterDto.maxPrice,
+      });
     }
 
     if (filterDto.propertyTypes && filterDto.propertyTypes.length > 0) {
-      queryBuilder.andWhere('listing.propertyType IN (:...propertyTypes)', { propertyTypes: filterDto.propertyTypes });
+      queryBuilder.andWhere('listing.propertyType IN (:...propertyTypes)', {
+        propertyTypes: filterDto.propertyTypes,
+      });
+    }
+
+    if (filterDto.amenityIds && filterDto.amenityIds.length > 0) {
+      const amenityMatchSubquery = this.listingRepository
+        .createQueryBuilder('amenityListing')
+        .select('amenityListing.id')
+        .innerJoin('amenityListing.amenities', 'requiredAmenity')
+        .where('requiredAmenity.id IN (:...amenityIds)', {
+          amenityIds: filterDto.amenityIds,
+        })
+        .groupBy('amenityListing.id')
+        .having('COUNT(DISTINCT requiredAmenity.id) = :amenityCount', {
+          amenityCount: filterDto.amenityIds.length,
+        });
+
+      queryBuilder
+        .andWhere(`listing.id IN (${amenityMatchSubquery.getQuery()})`)
+        .setParameters(amenityMatchSubquery.getParameters());
+    }
+
+    if (filterDto.checkIn || filterDto.checkOut) {
+      if (!filterDto.checkIn || !filterDto.checkOut) {
+        throw new BadRequestException(
+          'Both check-in and check-out dates are required to filter by availability',
+        );
+      }
+
+      const checkInDate = new Date(filterDto.checkIn);
+      const checkOutDate = new Date(filterDto.checkOut);
+
+      if (
+        Number.isNaN(checkInDate.getTime()) ||
+        Number.isNaN(checkOutDate.getTime())
+      ) {
+        throw new BadRequestException('Invalid check-in or check-out date');
+      }
+
+      if (checkOutDate <= checkInDate) {
+        throw new BadRequestException('Check-out date must be after check-in date');
+      }
+
+      queryBuilder
+        .andWhere(
+          `NOT EXISTS (
+            SELECT 1
+            FROM booking bookingFilter
+            WHERE bookingFilter."listingId" = listing.id
+              AND bookingFilter.status IN (:...blockingBookingStatuses)
+              AND bookingFilter."checkIn" < :checkOutDate
+              AND bookingFilter."checkOut" > :checkInDate
+          )`,
+          {
+            blockingBookingStatuses: ['pending', 'confirmed', 'completed'],
+            checkInDate,
+            checkOutDate,
+          },
+        )
+        .andWhere(
+          `NOT EXISTS (
+            SELECT 1
+            FROM "availabilityBlocks" availabilityBlock
+            WHERE availabilityBlock."listingId" = listing.id
+              AND availabilityBlock."startDate" < :checkOutDate
+              AND availabilityBlock."endDate" > :checkInDate
+          )`,
+          {
+            checkInDate,
+            checkOutDate,
+          },
+        );
     }
 
     const sortBy = filterDto.sortBy || ListingSortOption.NEWEST;
@@ -443,20 +517,54 @@ export class ListingsService {
       queryBuilder.orderBy('listing.createdAt', 'DESC');
     }
 
+    queryBuilder.addOrderBy('listing.id', 'ASC');
+
     const page = filterDto.page || 1;
     const limit = filterDto.limit || 10;
     const skip = (page - 1) * limit;
 
-    queryBuilder.skip(skip).take(limit);
+    const total = await queryBuilder.clone().getCount();
 
-    const [listings, total] = await queryBuilder.getManyAndCount();
+    const pagedIds = await queryBuilder
+      .clone()
+      .select('listing.id', 'id')
+      .skip(skip)
+      .take(limit)
+      .getRawMany<{ id: string }>();
 
-    // Sort photos in memory to keep displayOrder consistent without breaking TypeORM pagination
-    for (const listing of listings) {
-      if (listing.photos) {
-        listing.photos.sort((a, b) => a.displayOrder - b.displayOrder);
-      }
+    const listingIds = pagedIds.map((row) => row.id);
+
+    if (listingIds.length === 0) {
+      return {
+        listings: [],
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
     }
+
+    const listings = await this.listingRepository.find({
+      where: { id: In(listingIds) },
+      relations: {
+        photos: true,
+        amenities: {
+          category: true,
+        },
+      },
+      order: {
+        photos: {
+          displayOrder: 'ASC',
+        },
+      },
+    });
+
+    const listingOrder = new Map(listingIds.map((id, index) => [id, index]));
+    listings.sort(
+      (a, b) =>
+        (listingOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+        (listingOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+    );
 
     return {
       listings,
@@ -467,3 +575,6 @@ export class ListingsService {
     };
   }
 }
+
+
+

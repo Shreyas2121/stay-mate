@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+﻿import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api/client'
 import type { BackendResponse } from '@/features/auth'
 import type {
@@ -15,7 +15,11 @@ export function usePublicListings(filters: GetListingsFilter) {
       const response = await apiClient.get<BackendResponse<PaginatedListings>>(
         '/listings',
         {
-          params: filters,
+          params: {
+            ...filters,
+            propertyTypes: filters.propertyTypes?.join(','),
+            amenityIds: filters.amenityIds?.join(','),
+          },
         },
       )
       return response.data.data
@@ -36,3 +40,4 @@ export function usePublicListingDetail(id: string) {
     enabled: Boolean(id),
   })
 }
+

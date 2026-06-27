@@ -1,7 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+﻿import { createFileRoute } from '@tanstack/react-router'
 import { ListingsPage } from '@/features/listings'
 
-// Define the search parameters shape
 export interface ListingsSearch {
   lat?: number
   lng?: number
@@ -14,6 +13,7 @@ export interface ListingsSearch {
   minPrice?: number
   maxPrice?: number
   propertyTypes?: string[]
+  amenityIds?: string[]
   range?: number
 }
 
@@ -34,6 +34,11 @@ export const Route = createFileRoute('/listings')({
         ? search.propertyTypes.map(String)
         : search.propertyTypes
           ? String(search.propertyTypes).split(',')
+          : undefined,
+      amenityIds: Array.isArray(search.amenityIds)
+        ? search.amenityIds.map(String)
+        : search.amenityIds
+          ? String(search.amenityIds).split(',')
           : undefined,
       range: search.range ? Number(search.range) : undefined,
     }

@@ -1,9 +1,11 @@
-import { type Listing, type AmenityCategory, type Amenity } from '@/features/host-dashboard/types/listing.types'
+﻿import { type Listing, type AmenityCategory, type Amenity } from '@/features/host-dashboard/types/listing.types'
 
 export type { Listing, AmenityCategory, Amenity }
 
 export interface GetListingsFilter {
   guestCount?: number
+  checkIn?: string
+  checkOut?: string
   page?: number
   limit?: number
   sortBy?: string
@@ -13,6 +15,7 @@ export interface GetListingsFilter {
   minPrice?: number
   maxPrice?: number
   propertyTypes?: string[]
+  amenityIds?: string[]
 }
 
 export interface PaginatedListings {
